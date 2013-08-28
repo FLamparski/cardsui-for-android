@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.fima.cardsui.objects.Card;
@@ -19,10 +18,13 @@ public class MyPlayCard extends Card {
 				isClickable);
 	}
 
+	public MyPlayCard() {
+	}
+
 	@Override
 	public View getCardContent(Context context) {
 		View v = LayoutInflater.from(context).inflate(R.layout.card_play, null);
-		
+
 		((TextView) v.findViewById(R.id.title)).setText(titlePlay);
 		((TextView) v.findViewById(R.id.title)).setTextColor(Color
 				.parseColor(titleColor));

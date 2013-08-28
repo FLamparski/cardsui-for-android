@@ -96,7 +96,7 @@ public class CardFactory {
 
 			String fieldName = curField.getName();
 
-			Log.d("CardFactory", " > Now copying field: " + fieldName);
+			// Log.d("CardFactory", " > Now copying field: " + fieldName);
 
 			Field destField = destinationFields.get(fieldName);
 
