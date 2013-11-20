@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- package com.fima.cardsui;
 
-import static com.nineoldandroids.view.ViewHelper.setAlpha;
-import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
+package com.fima.cardsui;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.Animator.AnimatorListener;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
-import com.nineoldandroids.animation.ValueAnimator;
-import com.nineoldandroids.view.ViewHelper;
 
 /**
  * A {@link android.view.View.OnTouchListener} that makes any {@link View}
@@ -142,7 +139,7 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
 			mDownX = motionEvent.getRawX();
 			mVelocityTracker = VelocityTracker.obtain();
 			mVelocityTracker.addMovement(motionEvent);
-			//view.onTouchEvent(motionEvent);
+			// view.onTouchEvent(motionEvent);
 			return false;
 		}
 
@@ -168,40 +165,46 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
 			}
 			if (dismiss) {
 				// dismiss
-				animate(mView)
-						.translationX(dismissRight ? mViewWidth : -mViewWidth)
-						.alpha(0).setDuration(mAnimationTime)
-						.setListener(new AnimatorListener() {
-
-							@Override
-							public void onAnimationStart(Animator arg0) {
-								// TODO Auto-generated method stub
-
-							}
-
-							@Override
-							public void onAnimationRepeat(Animator arg0) {
-								// TODO Auto-generated method stub
-
-							}
-
-							@Override
-							public void onAnimationEnd(Animator arg0) {
-								performDismiss();
-
-							}
-
-							@Override
-							public void onAnimationCancel(Animator arg0) {
-								// TODO Auto-generated method stub
-
-							}
-						});
+				/*
+				 * animate(mView) .translationX(dismissRight ? mViewWidth :
+				 * -mViewWidth) .alpha(0).setDuration(mAnimationTime)
+				 * .setListener(new AnimatorListener() {
+				 * 
+				 * @Override public void onAnimationStart(Animator arg0) { //
+				 * TODO Auto-generated method stub
+				 * 
+				 * }
+				 * 
+				 * @Override public void onAnimationRepeat(Animator arg0) { //
+				 * TODO Auto-generated method stub
+				 * 
+				 * }
+				 * 
+				 * @Override public void onAnimationEnd(Animator arg0) {
+				 * performDismiss();
+				 * 
+				 * }
+				 * 
+				 * @Override public void onAnimationCancel(Animator arg0) { //
+				 * TODO Auto-generated method stub
+				 * 
+				 * } });
+				 */
+				AnimatorSet set = new AnimatorSet();
+				set.playTogether(ObjectAnimator.ofFloat(mView, "translationX",
+						dismissRight ? mViewWidth : -mViewWidth),
+						ObjectAnimator.ofFloat(mView, "alpha", 0));
+				set.setDuration(mAnimationTime).start();
 			} else {
-				// cancel
-				animate(mView).translationX(0).alpha(1)
-						.setDuration(mAnimationTime).setListener(null);
-
+				/*
+				 * // cancel animate(mView).translationX(0).alpha(1)
+				 * .setDuration(mAnimationTime).setListener(null);
+				 */
+				AnimatorSet set = new AnimatorSet();
+				set.playTogether(
+						ObjectAnimator.ofFloat(mView, "translationX", 0),
+						ObjectAnimator.ofFloat(mView, "alpha", 1));
+				set.setDuration(mAnimationTime).start();
 			}
 			mVelocityTracker.recycle();
 			mVelocityTracker = null;
@@ -233,15 +236,12 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
 
 			if (mSwiping) {
 				mTranslationX = deltaX;
-				ViewHelper.setTranslationX(mView, deltaX);
+				mView.setTranslationX(deltaX);
 
 				// TODO: use an ease-out interpolator or such
-				setAlpha(
-						mView,
-						Math.max(
-								0f,
-								Math.min(1f, 1f - 2f * Math.abs(deltaX)
-										/ mViewWidth)));
+
+				mView.setAlpha(Math.max(0f,
+						Math.min(1f, 1f - 2f * Math.abs(deltaX) / mViewWidth)));
 				return true;
 			}
 			break;
@@ -268,10 +268,9 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
 			public void onAnimationEnd(Animator animation) {
 				mCallback.onDismiss(mView, mToken);
 				// Reset view presentation
-				setAlpha(mView, 1f);
-				ViewHelper.setTranslationX(mView, 0);
-				// mView.setAlpha(1f);
-				// mView.setTranslationX(0);
+				mView.setAlpha(1f);
+				mView.setTranslationX(0f);
+
 				lp.height = originalHeight;
 				mView.setLayoutParams(lp);
 			}
